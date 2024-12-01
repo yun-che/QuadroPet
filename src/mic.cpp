@@ -157,6 +157,7 @@ void sendToSTT(void) // 上传到百度云
             else
             {
                 voice_answer = get_GPTanswer(voice_text);
+                
                 // Serial.println(voice_answer);
             }
         }
@@ -200,7 +201,7 @@ void getToSTT(void)
 
             voice_get = doc["audio_file"].as<String>();
             Serial.println(voice_get);
-            // audio.connecttohost(voice_get.c_str());
+            audio.connecttohost(voice_get.c_str());
         }
     }
     else
@@ -210,6 +211,7 @@ void getToSTT(void)
     http_voice.end();
 }
 
+// 没有用上
 String gainToken(void) // 获取token
 {
     HTTPClient http_token;
