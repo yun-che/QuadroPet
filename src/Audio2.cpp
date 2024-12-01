@@ -12,7 +12,7 @@
 #include "mp3_decoder/mp3_decoder.h"
 
 //---------------------------------------------------------------------------------------------------------------------
-AudioBuffer::AudioBuffer(size_t maxBlockSize)
+AudioBuffer2::AudioBuffer2(size_t maxBlockSize)
 {
     // if maxBlockSize isn't set use defaultspace (1600 bytes) is enough for aac and mp3 player
     if (maxBlockSize)
@@ -21,14 +21,14 @@ AudioBuffer::AudioBuffer(size_t maxBlockSize)
         m_maxBlockSize = maxBlockSize;
 }
 
-AudioBuffer::~AudioBuffer()
+AudioBuffer2::~AudioBuffer2()
 {
     if (m_buffer)
         free(m_buffer);
     m_buffer = NULL;
 }
 
-void AudioBuffer::setBufsize(int ram, int psram)
+void AudioBuffer2::setBufsize(int ram, int psram)
 {
     if (ram > -1) // -1 == default / no change
         m_buffSizeRAM = ram;
@@ -36,14 +36,14 @@ void AudioBuffer::setBufsize(int ram, int psram)
         m_buffSizePSRAM = psram;
 }
 
-size_t AudioBuffer::init()
+size_t AudioBuffer2::init()
 {
     if (m_buffer)
         free(m_buffer);
     m_buffer = NULL;
     if (psramInit() && m_buffSizePSRAM > 0)
     {
-        // PSRAM found, AudioBuffer will be allocated in PSRAM
+        // PSRAM found, AudioBuffer2 will be allocated in PSRAM
         m_f_psram = true;
         m_buffSize = m_buffSizePSRAM;
         m_buffer = (uint8_t *)ps_calloc(m_buffSize, sizeof(uint8_t));
@@ -63,18 +63,18 @@ size_t AudioBuffer::init()
     return m_buffSize;
 }
 
-void AudioBuffer::changeMaxBlockSize(uint16_t mbs)
+void AudioBuffer2::changeMaxBlockSize(uint16_t mbs)
 {
     m_maxBlockSize = mbs;
     return;
 }
 
-uint16_t AudioBuffer::getMaxBlockSize()
+uint16_t AudioBuffer2::getMaxBlockSize()
 {
     return m_maxBlockSize;
 }
 
-size_t AudioBuffer::freeSpace()
+size_t AudioBuffer2::freeSpace()
 {
     if (m_readPtr >= m_writePtr)
     {
@@ -89,7 +89,7 @@ size_t AudioBuffer::freeSpace()
     return m_freeSpace - 1;
 }
 
-size_t AudioBuffer::writeSpace()
+size_t AudioBuffer2::writeSpace()
 {
     if (m_readPtr >= m_writePtr)
     {
@@ -107,7 +107,7 @@ size_t AudioBuffer::writeSpace()
     return m_writeSpace;
 }
 
-size_t AudioBuffer::bufferFilled()
+size_t AudioBuffer2::bufferFilled()
 {
     if (m_writePtr >= m_readPtr)
     {
@@ -120,7 +120,7 @@ size_t AudioBuffer::bufferFilled()
     return m_dataLength;
 }
 
-void AudioBuffer::bytesWritten(size_t bw)
+void AudioBuffer2::bytesWritten(size_t bw)
 {
     m_writePtr += bw;
     if (m_writePtr == m_endPtr)
@@ -131,7 +131,7 @@ void AudioBuffer::bytesWritten(size_t bw)
         m_f_start = false;
 }
 
-void AudioBuffer::bytesWasRead(size_t br)
+void AudioBuffer2::bytesWasRead(size_t br)
 {
     m_readPtr += br;
     if (m_readPtr >= m_endPtr)
@@ -141,12 +141,12 @@ void AudioBuffer::bytesWasRead(size_t br)
     }
 }
 
-uint8_t *AudioBuffer::getWritePtr()
+uint8_t *AudioBuffer2::getWritePtr()
 {
     return m_writePtr;
 }
 
-uint8_t *AudioBuffer::getReadPtr()
+uint8_t *AudioBuffer2::getReadPtr()
 {
     size_t len = m_endPtr - m_readPtr;
     if (len < m_maxBlockSize)
@@ -156,7 +156,7 @@ uint8_t *AudioBuffer::getReadPtr()
     return m_readPtr;
 }
 
-void AudioBuffer::resetBuffer()
+void AudioBuffer2::resetBuffer()
 {
     m_writePtr = m_buffer;
     m_readPtr = m_buffer;
@@ -165,12 +165,12 @@ void AudioBuffer::resetBuffer()
     // memset(m_buffer, 0, m_buffSize); //Clear Inputbuffer
 }
 
-uint32_t AudioBuffer::getWritePos()
+uint32_t AudioBuffer2::getWritePos()
 {
     return m_writePtr - m_buffer;
 }
 
-uint32_t AudioBuffer::getReadPos()
+uint32_t AudioBuffer2::getReadPos()
 {
     return m_readPtr - m_buffer;
 }
@@ -357,7 +357,7 @@ esp_err_t Audio2::i2s_mclk_pin_select(const uint8_t pin)
 Audio2::~Audio2()
 {
     // I2Sstop(m_i2s_num);
-    // InBuff.~AudioBuffer(); #215 the AudioBuffer is automatically destroyed by the destructor
+    // InBuff.~AudioBuffer2(); #215 the AudioBuffer2 is automatically destroyed by the destructor
     setDefaults();
     if (m_playlistBuff)
     {

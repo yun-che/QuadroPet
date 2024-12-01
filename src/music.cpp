@@ -1,18 +1,24 @@
 #include <music.h>
 
-#define I2S_DOUT      39
-#define I2S_BCLK      40
-#define I2S_LRC       41
+#define I2S_DOUT 39
+#define I2S_BCLK 40
+#define I2S_LRC 41
 
 Audio audio;
+Audio2 audio2;
 String songlist;
-const char * songoptions;
+const char *songoptions;
 
-void initmusic(void) 
+void initmusic(void)
 {
     audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
     audio.setVolume(16); // 0...21
     audio.setBalance(100);
+
+    audio2.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+    audio2.setVolume(20);
+    audio2.setBalance(100);
+
     readmusic();
 }
 
@@ -34,7 +40,7 @@ void readmusic(void)
             const char *MP3_EXT = ".mp3";
             if ((filename[0] != '.') && (strcmp(MP3_EXT, &filename[len - 4]) == 0))
             {
-                songlist += filename; 
+                songlist += filename;
                 songlist += "\n";
             }
         }
@@ -45,27 +51,28 @@ void readmusic(void)
 }
 
 bool pause_flag = 0;
-void getmusic(void)//lv_timer_t * timer
+void getmusic(void) // lv_timer_t * timer
 {
     audio.loop();
-    audio.setVolume(voice); 
-    if(play_flag == 1)
+    audio.setVolume(voice);
+    if (play_flag == 1)
     {
-        if(pause_flag && !audio.isRunning())
+        if (pause_flag && !audio.isRunning())
         {
             audio.pauseResume();
             pause_flag = 0;
         }
-        if(start_flag)
+        if (start_flag)
         {
             audio.connecttoFS(SD, songname);
             start_flag = 0;
         }
-        if(!audio.isRunning())start_flag = 1;  
+        if (!audio.isRunning())
+            start_flag = 1;
     }
-    else 
+    else
     {
-        if(!pause_flag && audio.isRunning())
+        if (!pause_flag && audio.isRunning())
         {
             audio.pauseResume();
             pause_flag = 1;

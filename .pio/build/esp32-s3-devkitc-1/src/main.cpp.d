@@ -590,6 +590,8 @@
  C:/Users/20274/.platformio/packages/framework-arduinoespressif32@3.20014.231204/libraries/SD_MMC/src/sd_defines.h \
  C:/Users/20274/.platformio/packages/framework-arduinoespressif32@3.20014.231204/libraries/FFat/src/FFat.h \
  C:/Users/20274/.platformio/packages/framework-arduinoespressif32@3.20014.231204/tools/sdk/esp32s3/include/wear_levelling/include/wear_levelling.h \
+ src/Audio2.h \
+ C:/Users/20274/.platformio/packages/framework-arduinoespressif32@3.20014.231204/cores/esp32/esp32-hal-log.h \
  .pio/libdeps/esp32-s3-devkitc-1/lv_lib_100ask/src/lv_100ask_2048/lv_100ask_2048.h \
  e:\esp32-s3\esp32-s3\.pio\libdeps\esp32-s3-devkitc-1\lv_lib_100ask\lv_lib_100ask.h \
  e:\esp32-s3\esp32-s3\.pio\libdeps\esp32-s3-devkitc-1\lvgl\lvgl.h \

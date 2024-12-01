@@ -157,7 +157,8 @@ void sendToSTT(void) // 上传到百度云
             else
             {
                 voice_answer = get_GPTanswer(voice_text);
-                
+                audio2.connecttospeech(voice_answer.c_str(), "zh");
+
                 // Serial.println(voice_answer);
             }
         }

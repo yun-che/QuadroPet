@@ -17,6 +17,7 @@
 #include <SPI.h>
 #include <driver/i2s.h>
 #include <Audio.h>
+#include <Audio2.h>
 #include <SD.h>
 
 #include "lv_100ask_2048/lv_100ask_2048.h"
@@ -44,6 +45,7 @@ void initmusic(void);
 void readmusic(void);
 void getmusic(void);//lv_timer_t * timer
 extern Audio audio;
+extern Audio2 audio2;
 
 void initmic(void);
 void getmic(void);

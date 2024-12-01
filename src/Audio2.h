@@ -43,13 +43,13 @@ extern __attribute__((weak)) void audio_eof_speech(const char *);
 extern __attribute__((weak)) void audio_eof_stream(const char *);                                       // The webstream comes to an end
 extern __attribute__((weak)) void audio_process_extern(int16_t *buff, uint16_t len, bool *continueI2S); // record audiodata or send via BT
 extern __attribute__((weak)) void audio_process_i2s(uint32_t *sample, bool *continueI2S);               // record audiodata or send via BT
-extern __attribute__((weak)) void audio_log(uint8_t logLevel, const char* msg, const char* arg);        //新加的
+extern __attribute__((weak)) void audio_log(uint8_t logLevel, const char *msg, const char *arg);        // 新加的
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class AudioBuffer
+class AudioBuffer2
 {
-    // AudioBuffer will be allocated in PSRAM, If PSRAM not available or has not enough space AudioBuffer will be
+    // AudioBuffer2 will be allocated in PSRAM, If PSRAM not available or has not enough space AudioBuffer2 will be
     // allocated in FlashRAM with reduced size
     //
     //  m_buffer            m_readPtr                 m_writePtr                 m_endPtr
@@ -76,9 +76,9 @@ class AudioBuffer
     //
 
 public:
-    AudioBuffer(size_t maxBlockSize = 0); // constructor
-    ~AudioBuffer();                       // frees the buffer
-    size_t init();                        // set default values
+    AudioBuffer2(size_t maxBlockSize = 0); // constructor
+    ~AudioBuffer2();                       // frees the buffer
+    size_t init();                         // set default values
     bool isInitialized() { return m_f_init; };
     void setBufsize(int ram, int psram);
     void changeMaxBlockSize(uint16_t mbs); // is default 1600 for mp3 and aac, set 16384 for FLAC
@@ -115,10 +115,10 @@ protected:
 };
 //----------------------------------------------------------------------------------------------------------------------
 
-class Audio2 : private AudioBuffer
+class Audio2 : private AudioBuffer2
 {
 
-    AudioBuffer InBuff; // instance of input buffer
+    AudioBuffer2 InBuff; // instance of input buffer
 
 public:
     Audio2(bool internalDAC = false, uint8_t channelEnabled = 3, uint8_t i2sPort = I2S_NUM_0); // #99
@@ -176,7 +176,14 @@ private:
 #define ESP_ARDUINO_VERSION_PATCH 0
 #endif
     // 新加的
-    enum : int8_t { AUDIOLOG_PATH_IS_NULL = -1, AUDIOLOG_FILE_NOT_FOUND = -2, AUDIOLOG_OUT_OF_MEMORY = -3, AUDIOLOG_FILE_READ_ERR = -4, AUDIOLOG_ERR_UNKNOWN = -127 };
+    enum : int8_t
+    {
+        AUDIOLOG_PATH_IS_NULL = -1,
+        AUDIOLOG_FILE_NOT_FOUND = -2,
+        AUDIOLOG_OUT_OF_MEMORY = -3,
+        AUDIOLOG_FILE_READ_ERR = -4,
+        AUDIOLOG_ERR_UNKNOWN = -127
+    };
 
     void UTF8toASCII(char *str);
     bool latinToUTF8(char *buff, size_t bufflen);
@@ -200,7 +207,7 @@ private:
     int sendBytes(uint8_t *data, size_t len);
     void setDecoderItems();
     void compute_audioCurrentTime(int bd);
-    void printProcessLog(int r, const char* s = "");    // 新加的
+    void printProcessLog(int r, const char *s = ""); // 新加的
     void printDecodeError(int r);
     void showID3Tag(const char *tag, const char *val);
     size_t readAudioHeader(uint32_t bytes);
