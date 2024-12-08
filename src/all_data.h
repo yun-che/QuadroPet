@@ -17,7 +17,6 @@
 #include <SPI.h>
 #include <driver/i2s.h>
 #include <Audio.h>
-#include <Audio2.h>
 #include <SD.h>
 
 #include "lv_100ask_2048/lv_100ask_2048.h"
@@ -29,12 +28,12 @@
 
 void init_clear(void);
 
-void WiFiUpdate(void); //lv_timer_t * timer
+void WiFiUpdate(void); // lv_timer_t * timer
 void scanWiFi(void);
 void connectWiFi(void);
 void initWiFi(void);
 
-void get_time_weather(void); //lv_timer_t * timer
+void get_time_weather(void); // lv_timer_t * timer
 void get_time_init(void);
 void get_weather(void);
 
@@ -43,9 +42,8 @@ void lv_fs_test(void);
 
 void initmusic(void);
 void readmusic(void);
-void getmusic(void);//lv_timer_t * timer
+void getmusic(void); // lv_timer_t * timer
 extern Audio audio;
-extern Audio2 audio2;
 
 void initmic(void);
 void getmic(void);
@@ -63,5 +61,9 @@ void GPTtest(void);
 
 void lv_100ask_2048_simple_test(void);
 void lv_100ask_calc_simple_test(void);
+
+void baiduTTS_Send(String text);
+void playAudio(uint8_t *audioData, size_t audioDataSize);
+void clearAudio(void);
 
 #endif

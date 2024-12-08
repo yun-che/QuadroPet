@@ -5,7 +5,6 @@
 #define I2S_LRC 41
 
 Audio audio;
-Audio2 audio2;
 String songlist;
 const char *songoptions;
 
@@ -14,10 +13,6 @@ void initmusic(void)
     audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
     audio.setVolume(16); // 0...21
     audio.setBalance(100);
-
-    audio2.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-    audio2.setVolume(20);
-    audio2.setBalance(100);
 
     readmusic();
 }

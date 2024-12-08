@@ -8,7 +8,7 @@ String voice_text;
 String voice_answer;
 String voice_get;
 // String token = "24.581e5a0e7b6dfc03dc8d12a14e76827e.2592000.1727168373.282335-110515010";
-String token = "24.1ef4c661d31b08b3cd8df46033386856.2592000.1727763631.282335-113434065";
+String token = "24.776a2384a4388f549d33c82d1625b16a.2592000.1735718457.282335-113434065";
 
 const int recordTimeSeconds = 4; // 定时器录音时间 4s
 hw_timer_t *timer = NULL;
@@ -29,6 +29,7 @@ bool adc_complete_flag = 0; // 完成标志
 // const char *API_KEY = "88dxgc4v4mbmZDWO9aejcxi5";
 // const char *SECRET_KEY = "Hx2TpilDl6Fio9B6Z38i0WrbtMToG4zh";
 // const char *ID = "110515010";
+// 没用上，获取token
 const char *API_KEY = "10OMmaPF5aGYQLPgCxI2VFU4";
 const char *SECRET_KEY = "CEPmT8Qaqb7F90hsJ7qdp0VTi1CVWdqO";
 const char *ID = "113434065";
@@ -157,8 +158,7 @@ void sendToSTT(void) // 上传到百度云
             else
             {
                 voice_answer = get_GPTanswer(voice_text);
-                audio2.connecttospeech(voice_answer.c_str(), "zh");
-
+                baiduTTS_Send(voice_answer);
                 // Serial.println(voice_answer);
             }
         }
@@ -299,4 +299,114 @@ void IRAM_ATTR onTimer()
     }
 
     portEXIT_CRITICAL_ISR(&timerMux);
+}
+
+void baiduTTS_Send(String text)
+{
+    if (text.length() == 0)
+    {
+        Serial.println("text is null");
+        return;
+    }
+
+    const int per = 1;
+    const int spd = 2;
+    const int pit = 5;
+    const int vol = 10;
+    const int aue = 6;
+
+    // 进行 URL 编码
+    String encodedText = urlEncode(urlEncode(text));
+
+    // URL http请求数据封装
+    String url = "https://tsn.baidu.com/text2audio";
+
+    const char *header[] = {"Content-Type", "Content-Length"};
+
+    url += "?tok=" + token;
+    url += "&tex=" + encodedText;
+    url += "&per=" + String(per);
+    url += "&spd=" + String(spd);
+    url += "&pit=" + String(pit);
+    url += "&vol=" + String(vol);
+    url += "&aue=" + String(aue);
+    url += "&cuid=esp32s3";
+    url += "&lan=zh";
+    url += "&ctp=1";
+
+    // http请求创建
+    HTTPClient http;
+
+    http.begin(url);
+    http.collectHeaders(header, 2);
+
+    // http请求
+    int httpResponseCode = http.GET();
+    if (httpResponseCode > 0)
+    {
+        if (httpResponseCode == HTTP_CODE_OK)
+        {
+            String contentType = http.header("Content-Type");
+            Serial.println(contentType);
+            if (contentType.startsWith("audio"))
+            {
+                Serial.println("合成成功");
+
+                // 获取返回的音频数据流
+                Stream *stream = http.getStreamPtr();
+                uint8_t buffer[512];
+                size_t bytesRead = 0;
+
+                // 设置timeout为200ms 避免最后出现杂音
+                stream->setTimeout(200);
+                clearAudio();
+                while (http.connected() && (bytesRead = stream->readBytes(buffer, sizeof(buffer))) > 0)
+                {
+                    // 音频输出
+                    playAudio(buffer, bytesRead);
+                    delay(1);
+                }
+
+                // 清空I2S DMA缓冲区
+                clearAudio();
+            }
+            else if (contentType.equals("application/json"))
+            {
+                Serial.println("合成出现错误");
+            }
+            else
+            {
+                Serial.println("未知的Content-Type");
+            }
+        }
+        else
+        {
+            Serial.println("Failed to receive audio file");
+        }
+    }
+    else
+    {
+        Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+    }
+    http.end();
+}
+
+// Play audio data using MAX98357A
+void playAudio(uint8_t *audioData, size_t audioDataSize)
+{
+    if (audioDataSize > 0)
+    {
+        // 发送
+        size_t bytes_written = 0;
+        i2s_write(I2S_NUM_0, (int16_t *)audioData, audioDataSize, &bytes_written, portMAX_DELAY);
+        // esp_err_t err = i2s_write((i2s_port_t) m_i2s_num, (const char*) &s32, sizeof(uint32_t), &m_i2s_bytesWritten, 1000);
+    }
+}
+
+void clearAudio(void)
+{
+    // 清空I2S DMA缓冲区
+    i2s_zero_dma_buffer(I2S_NUM_0);
+    Serial.print("clearAudio");
 }
