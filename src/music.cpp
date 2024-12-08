@@ -57,12 +57,12 @@ void getmusic(void) // lv_timer_t * timer
             audio.pauseResume();
             pause_flag = 0;
         }
-        if (start_flag)
+        if (start_flag)//从头播放
         {
             audio.connecttoFS(SD, songname);
             start_flag = 0;
         }
-        if (!audio.isRunning())
+        if (!audio.isRunning()) // 直接点击开始按钮，此时play_flag=1但无播放，置start_flag=1
             start_flag = 1;
     }
     else

@@ -23,6 +23,7 @@
 
 #include <ui/src/ui.h>
 #include <my_gui.h>
+#include "BluetoothSerial.h"
 
 #include <all_extern.h>
 
@@ -65,5 +66,9 @@ void lv_100ask_calc_simple_test(void);
 void baiduTTS_Send(String text);
 void playAudio(uint8_t *audioData, size_t audioDataSize);
 void clearAudio(void);
+
+void handleReceivedNumber(int number);
+void move_loop();
+void Serialsetup();
 
 #endif
